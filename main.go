@@ -13,7 +13,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/object/{id}", handlers.UploadHandler).Methods("PUT")
 	r.HandleFunc("/object/{id}", handlers.GetHandler).Methods("GET")
-	http.Handle("/", r)
 
+	log.Println("Starting server on :3000")
 	log.Fatal(http.ListenAndServe("localhost:3000", r))
 }
