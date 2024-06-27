@@ -1,31 +1,53 @@
 package handlers
 
 import (
-	"fmt"
-	"log"
+	"io"
 	"net/http"
+	"strconv"
+	"unicode"
 
-	"github.com/dlion/spacelift-challenge/container"
+	"github.com/dlion/spacelift-challenge/hash"
+	"github.com/dlion/spacelift-challenge/storage"
 	"github.com/docker/docker/client"
 	"github.com/gorilla/mux"
 )
 
 type HandlerManager struct {
-	DockerCli *client.Client
+	DockerCli     *client.Client
+	MinioServices []*storage.MinioService
+	Instances     int
 }
 
 func (h *HandlerManager) UploadHandler(w http.ResponseWriter, r *http.Request) {
-	// @TODO: Use istances for the hash
-	instances, err := container.GetMinioInstancesFromDocker(h.DockerCli)
-	if err != nil {
-		log.Fatalf("Can't get minio instances from docker")
-	}
-
-	for _, v := range instances {
-		fmt.Println(v)
-	}
-
 	vars := mux.Vars(r)
+	id, exists := vars["id"]
+	if !exists || len(id) > 32 || !isAlphanumeric(id) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	hashManager := &hash.HashManager{}
+	instanceNumber := hashManager.GetInstanceFromKey(id, h.Instances)
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if ok, _ := h.MinioServices[instanceNumber].UploadFile(body, strconv.Itoa(hashManager.HashId(id))); !ok {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Upload: %v\n", vars["id"])
+}
+
+func isAlphanumeric(s string) bool {
+	for _, char := range s {
+		if !unicode.IsLetter(char) && !unicode.IsDigit(char) {
+			return false
+		}
+	}
+	return true
 }

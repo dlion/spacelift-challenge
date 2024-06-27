@@ -2,13 +2,16 @@ package hash
 
 import "hash/fnv"
 
-func GetInstanceFromKey(key string, numberOfInstances int) int {
-	hash := hashId(key)
+type HashManager struct {
+}
+
+func (m *HashManager) GetInstanceFromKey(key string, numberOfInstances int) int {
+	hash := m.HashId(key)
 	return int(hash) % int(numberOfInstances)
 }
 
-func hashId(id string) uint32 {
+func (m *HashManager) HashId(id string) int {
 	h := fnv.New32a()
 	h.Write([]byte(id))
-	return h.Sum32()
+	return int(h.Sum32())
 }

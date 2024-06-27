@@ -46,7 +46,9 @@ func TestContainerMinio(t *testing.T) {
 
 		assert.NotEmpty(t, instances)
 		assert.Equal(t, 1, len(instances))
-		assert.Contains(t, instances[0].URL, "http://")
+		ip, err := minioContainer.ContainerIP(ctx)
+		assert.NoError(t, err)
+		assert.Contains(t, instances[0].URL, ip)
 		assert.Equal(t, instances[0].Access, "minioadmin")
 		assert.Equal(t, instances[0].Secret, "minioadmin")
 	})
