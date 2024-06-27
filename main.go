@@ -7,30 +7,19 @@ import (
 
 	"github.com/dlion/spacelift-challenge/docker"
 	"github.com/dlion/spacelift-challenge/handlers"
-	"github.com/dlion/spacelift-challenge/storage"
 	"github.com/docker/docker/client"
 	"github.com/gorilla/mux"
 )
 
 func main() {
-
+	r := mux.NewRouter()
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		log.Fatalf("Failed to create Docker client: %v", err)
 	}
+	prova := handlers.HandlerManager{DockerCli: cli}
 
-	//@TODO: Use istances for the hash
-	instances, err := storage.GetMinioInstancesFromDocker(cli)
-	if err != nil {
-		log.Fatalf("Can't get minio instances from docker")
-	}
-
-	for _, v := range instances {
-		log.Println(v)
-	}
-
-	r := mux.NewRouter()
-	r.HandleFunc("/object/{id}", handlers.UploadHandler).Methods("PUT")
+	r.HandleFunc("/object/{id}", prova.UploadHandler).Methods("PUT")
 	r.HandleFunc("/object/{id}", handlers.GetHandler).Methods("GET")
 
 	serverAddress := getServerAddress(cli)

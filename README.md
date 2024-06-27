@@ -1,3 +1,26 @@
+# Spacelift home assignment
+
+Author: Domenico Luciani
+Email: domenicoluciani@gmail.com
+Site: https://domenicoluciani.com
+Linkedin: https://linkedin.com/in/dlion
+
+## How to run tests
+
+> Be sure to have docker installed, up and running
+
+`go test ./...`
+
+## How to run the project
+
+`docker-compose up --build`
+
+## Improvements
+1. The hash function can be improved using [consistent hashing](https://highscalability.com/consistent-hashing-algorithm/). My assumption for this exercise is that whenever we spawn a minIO instance it stays up and running without down. Clearly it's an impossible scenario made up for matter of time.
+
+
+---
+
 Hey there! Hope you'll have at least as much fun with this exercise, as we had designing it 😄
 
 Your starting point is a local Docker daemon with multiple self-contained Minio Object Storage instances.
