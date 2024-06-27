@@ -1,4 +1,4 @@
-package docker
+package container
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"github.com/testcontainers/testcontainers-go/modules/minio"
 )
 
-func TestDocker(t *testing.T) {
+func TestContainer(t *testing.T) {
 	ctx := context.Background()
 	minioContainer, err := minio.RunContainer(ctx,
 		testcontainers.WithImage("minio/minio:RELEASE.2024-01-16T16-07-38Z"),

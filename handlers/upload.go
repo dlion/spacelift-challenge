@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/dlion/spacelift-challenge/storage"
+	"github.com/dlion/spacelift-challenge/container"
 	"github.com/docker/docker/client"
 	"github.com/gorilla/mux"
 )
@@ -16,7 +16,7 @@ type HandlerManager struct {
 
 func (h *HandlerManager) UploadHandler(w http.ResponseWriter, r *http.Request) {
 	// @TODO: Use istances for the hash
-	instances, err := storage.GetMinioInstancesFromDocker(h.DockerCli)
+	instances, err := container.GetMinioInstancesFromDocker(h.DockerCli)
 	if err != nil {
 		log.Fatalf("Can't get minio instances from docker")
 	}
