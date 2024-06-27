@@ -17,6 +17,9 @@ Linkedin: https://linkedin.com/in/dlion
 
 ## Improvements
 1. The hash function can be improved using [consistent hashing](https://highscalability.com/consistent-hashing-algorithm/). My assumption for this exercise is that whenever we spawn a minIO instance it stays up and running without down. Clearly it's an impossible scenario made up for matter of time.
+2. If the file exists, it will be override with the new one. As improvment we can consider a better way to handle this scenario.
+3. Removed `MINIO_SECRET_KEY` and `MINIO_ACCESS_KEY` because they are deprecated, subsituting them with `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`.
+4. Removed Inconsisency inside the `go.mod` file and Dockerfile, now everything is using Go1.22
 
 
 ---

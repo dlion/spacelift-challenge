@@ -22,10 +22,6 @@ func TestMinio(t *testing.T) {
 
 		minioContainer, err := minioTest.RunContainer(ctx,
 			testcontainers.WithImage("minio/minio:RELEASE.2024-01-16T16-07-38Z"),
-			testcontainers.WithEnv(map[string]string{
-				"MINIO_ACCESS_KEY": "test",
-				"MINIO_SECRET_KEY": "test",
-			}),
 			testcontainers.CustomizeRequest(
 				testcontainers.GenericContainerRequest{
 					ContainerRequest: testcontainers.ContainerRequest{
@@ -56,8 +52,8 @@ func TestMinio(t *testing.T) {
 		assert.NotEmpty(t, instances)
 		assert.Equal(t, 1, len(instances))
 		assert.Contains(t, instances[0].URL, "http://")
-		assert.Equal(t, instances[0].Access, "test")
-		assert.Equal(t, instances[0].Secret, "test")
+		assert.Equal(t, instances[0].Access, "minioadmin")
+		assert.Equal(t, instances[0].Secret, "minioadmin")
 	})
 
 	t.Run("It should upload a file to a minio instance", func(t *testing.T) {
@@ -65,10 +61,6 @@ func TestMinio(t *testing.T) {
 
 		minioContainer, err := minioTest.RunContainer(ctx,
 			testcontainers.WithImage("minio/minio:RELEASE.2024-01-16T16-07-38Z"),
-			testcontainers.WithEnv(map[string]string{
-				"MINIO_ACCESS_KEY": "test",
-				"MINIO_SECRET_KEY": "test",
-			}),
 			testcontainers.CustomizeRequest(
 				testcontainers.GenericContainerRequest{
 					ContainerRequest: testcontainers.ContainerRequest{
@@ -117,10 +109,6 @@ func TestMinio(t *testing.T) {
 		ctx := context.Background()
 		minioContainer, err := minioTest.RunContainer(ctx,
 			testcontainers.WithImage("minio/minio:RELEASE.2024-01-16T16-07-38Z"),
-			testcontainers.WithEnv(map[string]string{
-				"MINIO_ACCESS_KEY": "test",
-				"MINIO_SECRET_KEY": "test",
-			}),
 			testcontainers.CustomizeRequest(
 				testcontainers.GenericContainerRequest{
 					ContainerRequest: testcontainers.ContainerRequest{

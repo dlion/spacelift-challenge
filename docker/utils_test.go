@@ -15,10 +15,6 @@ func TestDocker(t *testing.T) {
 	ctx := context.Background()
 	minioContainer, err := minio.RunContainer(ctx,
 		testcontainers.WithImage("minio/minio:RELEASE.2024-01-16T16-07-38Z"),
-		testcontainers.WithEnv(map[string]string{
-			"MINIO_ACCESS_KEY": "test",
-			"MINIO_SECRET_KEY": "test",
-		}),
 		testcontainers.CustomizeRequest(
 			testcontainers.GenericContainerRequest{
 				ContainerRequest: testcontainers.ContainerRequest{
@@ -82,9 +78,9 @@ func TestDocker(t *testing.T) {
 
 		keyMap := GetAccessSecretKeyFromTheContainer(containerInspect)
 
-		assert.Contains(t, keyMap, "MINIO_ACCESS_KEY")
-		assert.Contains(t, keyMap, "MINIO_SECRET_KEY")
-		assert.Equal(t, keyMap["MINIO_ACCESS_KEY"], "test")
-		assert.Equal(t, keyMap["MINIO_SECRET_KEY"], "test")
+		assert.Contains(t, keyMap, "MINIO_ROOT_USER")
+		assert.Contains(t, keyMap, "MINIO_ROOT_PASSWORD")
+		assert.Equal(t, keyMap["MINIO_ROOT_USER"], "minioadmin")
+		assert.Equal(t, keyMap["MINIO_ROOT_PASSWORD"], "minioadmin")
 	})
 }
