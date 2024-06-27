@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/docker/docker/api/types"
@@ -31,44 +30,25 @@ func GetMinioInstancesFromDocker(client *client.Client) ([]MinioInstance, error)
 	var instances []MinioInstance
 	for _, container := range containers {
 		if name, ok := container.Labels["com.docker.compose.service"]; ok && strings.Contains(name, fmt.Sprintf("%s-node", INSTANCE_NAME)) {
-			ip := getContainerIP(container.NetworkSettings)
-			port := getContainerPort(container.Ports)
-
 			containerInspect, err := client.ContainerInspect(context.Background(), container.ID)
 			if err != nil {
 				return nil, fmt.Errorf("failed to inspect container %s: %v", container.ID, err)
 			}
 
 			accessKey, secretKey := getAccessSecretKeysFromTheContainer(containerInspect)
-			instance := MinioInstance{
+			ip := getIPAddressFromTheContainer(containerInspect)
+			port := getPortFromTheContainer(containerInspect)
+
+			instances = append(instances, MinioInstance{
 				Name:   container.Names[0],
 				URL:    "http://" + ip + ":" + port,
 				Access: accessKey,
 				Secret: secretKey,
-			}
-			instances = append(instances, instance)
+			})
 		}
 	}
 
 	return instances, nil
-}
-
-func getContainerPort(ports []types.Port) string {
-	for _, port := range ports {
-		if port.Type == "tcp" && port.PublicPort != 0 {
-			return strconv.Itoa(int(port.PublicPort))
-		}
-	}
-	return ""
-}
-
-func getContainerIP(netSettings *types.SummaryNetworkSettings) string {
-	network := netSettings.Networks[INSTANCE_NAME]
-	if network != nil {
-		return network.IPAddress
-	}
-
-	return netSettings.Networks["bridge"].IPAddress
 }
 
 func getAccessSecretKeysFromTheContainer(ci types.ContainerJSON) (string, string) {
@@ -82,4 +62,23 @@ func getAccessSecretKeysFromTheContainer(ci types.ContainerJSON) (string, string
 	}
 
 	return envMap["MINIO_ACCESS_KEY"], envMap["MINIO_SECRET_KEY"]
+}
+
+func getIPAddressFromTheContainer(ci types.ContainerJSON) string {
+	if ci.NetworkSettings != nil {
+		for _, network := range ci.NetworkSettings.Networks {
+			return network.IPAddress
+		}
+	}
+	return "0.0.0.0"
+}
+
+func getPortFromTheContainer(ci types.ContainerJSON) string {
+	for portMapping, bindings := range ci.NetworkSettings.Ports {
+		if len(bindings) > 0 {
+			return bindings[0].HostPort
+		}
+		return portMapping.Port()
+	}
+	return ""
 }
