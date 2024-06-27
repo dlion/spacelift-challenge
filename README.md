@@ -1,8 +1,8 @@
 # Spacelift home assignment
 
-Author: Domenico Luciani
-Email: domenicoluciani@gmail.com
-Site: https://domenicoluciani.com
+Author: Domenico Luciani   
+Email: domenicoluciani@gmail.com   
+Site: https://domenicoluciani.com   
 Linkedin: https://linkedin.com/in/dlion
 
 ## How to run tests
