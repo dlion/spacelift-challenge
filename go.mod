@@ -1,10 +1,9 @@
-module github.com/spacelift-io/homework-object-storage
+module github.com/dlion/spacelift-challenge
 
-go 1.21
-
-toolchain go1.22.2
+go 1.22.2
 
 require (
+	github.com/docker/docker v25.0.5+incompatible
 	github.com/gorilla/mux v1.8.1
 	github.com/stretchr/testify v1.9.0
 	github.com/testcontainers/testcontainers-go v0.31.0
@@ -22,7 +21,6 @@ require (
 	github.com/cpuguy83/dockercfg v0.3.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/distribution/reference v0.5.0 // indirect
-	github.com/docker/docker v25.0.5+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect

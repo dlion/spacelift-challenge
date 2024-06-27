@@ -1,9 +1,8 @@
-FROM golang:1.15
-WORKDIR /mnt/homework
+FROM golang:1.22.2 AS builder
+WORKDIR /go/src/app
 COPY . .
-RUN go build
+RUN GOARCH=amd64 GOOS=linux go build -o spacelift-challenge .
 
-# Docker is used as a base image so you can easily start playing around in the container using the Docker command line client.
 FROM docker
-COPY --from=0 /mnt/homework/homework-object-storage /usr/local/bin/homework-object-storage
+COPY --from=builder /go/src/app/spacelift-challenge /usr/local/bin/spacelift-challenge
 RUN apk add bash curl
