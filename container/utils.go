@@ -37,13 +37,17 @@ func GetIPAddressFromTheContainer(ci types.ContainerJSON) string {
 	return "0.0.0.0"
 }
 
-func GetPortFromTheContainer(ci types.ContainerJSON) string {
+func GetPortFromTheContainer(ci types.ContainerJSON, evaluateBindings bool) string {
 	for portMapping, bindings := range ci.NetworkSettings.Ports {
-		if len(bindings) > 0 {
+		if evaluateBindings && len(bindings) > 0 {
 			return bindings[0].HostPort
 		}
-		return portMapping.Port()
+
+		if !evaluateBindings {
+			return portMapping.Port()
+		}
 	}
+
 	return ""
 }
 

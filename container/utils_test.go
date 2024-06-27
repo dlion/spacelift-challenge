@@ -59,7 +59,7 @@ func TestContainer(t *testing.T) {
 		containerInspect, err := cli.ContainerInspect(ctx, minioContainer.GetContainerID())
 		assert.NoError(t, err)
 
-		instancePort := GetPortFromTheContainer(containerInspect)
+		instancePort := GetPortFromTheContainer(containerInspect, true)
 
 		mappedPort, err := minioContainer.MappedPort(ctx, "9000")
 		assert.NoError(t, err)

@@ -36,7 +36,7 @@ func GetMinioInstancesFromDocker(client *client.Client) ([]MinioInstance, error)
 
 			mapKey := GetAccessSecretKeyFromTheContainer(containerInspect)
 			ip := GetIPAddressFromTheContainer(containerInspect)
-			port := GetPortFromTheContainer(containerInspect)
+			port := GetPortFromTheContainer(containerInspect, false)
 
 			instances = append(instances, MinioInstance{
 				Name:   container.Names[0],

@@ -12,10 +12,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-const (
-	GATEWAY_PORT = "3000"
-)
-
 func main() {
 	dockerClient := getDockerClientFromEnv()
 	minioInstances := getMinioInstancesFromDocker(dockerClient)
@@ -68,5 +64,5 @@ func getServerAddress(cli *client.Client) string {
 	if err != nil {
 		log.Fatalf("Can't inspect the gateway container from docker")
 	}
-	return container.GetIPAddressFromTheContainer(containerInsp) + ":" + GATEWAY_PORT
+	return container.GetIPAddressFromTheContainer(containerInsp) + ":" + container.GetPortFromTheContainer(containerInsp, true)
 }
