@@ -12,18 +12,38 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const (
+	GATEWAY_PORT = "3000"
+)
+
 func main() {
-	r := mux.NewRouter()
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+	dockerClient := getDockerClientFromEnv()
+	minioInstances := getMinioInstancesFromDocker(dockerClient)
+	services := getMinioServicesFromMinioInstances(minioInstances)
+	router := defineHandlers(services)
+	serverAddress := getServerAddress(dockerClient)
+	log.Printf("Starting server on %s\n", serverAddress)
+	log.Fatal(http.ListenAndServe(serverAddress, router))
+}
+
+func defineHandlers(services []*storage.MinioService) *mux.Router {
+	handlerManager := handlers.NewHandlerManager(services)
+	router := mux.NewRouter()
+	router.HandleFunc("/object/{id}", handlerManager.UploadHandler).Methods("PUT")
+	router.HandleFunc("/object/{id}", handlerManager.GetHandler).Methods("GET")
+	return router
+}
+
+func getDockerClientFromEnv() *client.Client {
+	dockerClient, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		log.Fatalf("Failed to create Docker client: %v", err)
 	}
 
-	minioInstances, err := container.GetMinioInstancesFromDocker(cli)
-	if err != nil {
-		log.Fatalf("Failed to get Minio Instances: %v", err)
-	}
+	return dockerClient
+}
 
+func getMinioServicesFromMinioInstances(minioInstances []container.MinioInstance) []*storage.MinioService {
 	services := make([]*storage.MinioService, len(minioInstances))
 	for i, v := range minioInstances {
 		client, err := storage.NewMinioClient(v.URL, v.Access, v.Secret)
@@ -32,18 +52,15 @@ func main() {
 		}
 		services[i] = storage.NewMinioService(client)
 	}
+	return services
+}
 
-	handlerManager := handlers.HandlerManager{
-		DockerCli:     cli,
-		Instances:     len(minioInstances),
-		MinioServices: services,
+func getMinioInstancesFromDocker(dockerClient *client.Client) []container.MinioInstance {
+	minioInstances, err := container.GetMinioInstancesFromDocker(dockerClient)
+	if err != nil {
+		log.Fatalf("Failed to get Minio Instances: %v", err)
 	}
-	r.HandleFunc("/object/{id}", handlerManager.UploadHandler).Methods("PUT")
-	r.HandleFunc("/object/{id}", handlers.GetHandler).Methods("GET")
-
-	serverAddress := getServerAddress(cli)
-	log.Printf("Starting server on %s\n", serverAddress)
-	log.Fatal(http.ListenAndServe(serverAddress, r))
+	return minioInstances
 }
 
 func getServerAddress(cli *client.Client) string {
@@ -51,6 +68,5 @@ func getServerAddress(cli *client.Client) string {
 	if err != nil {
 		log.Fatalf("Can't inspect the gateway container from docker")
 	}
-	serverAddress := container.GetIPAddressFromTheContainer(containerInsp) + ":3000"
-	return serverAddress
+	return container.GetIPAddressFromTheContainer(containerInsp) + ":" + GATEWAY_PORT
 }

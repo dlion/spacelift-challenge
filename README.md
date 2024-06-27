@@ -20,6 +20,7 @@ Linkedin: https://linkedin.com/in/dlion
 2. If the file exists, it will be override with the new one. As improvment we can consider a better way to handle this scenario.
 3. Removed `MINIO_SECRET_KEY` and `MINIO_ACCESS_KEY` because they are deprecated, subsituting them with `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`.
 4. Removed Inconsisency inside the `go.mod` file and Dockerfile, now everything is using Go1.22
+5. As improvement we can upload files with their mime-type so we can visualize them in the webui.
 
 
 ---
