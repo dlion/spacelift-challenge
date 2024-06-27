@@ -23,6 +23,20 @@ Linkedin: https://linkedin.com/in/dlion
 5. As improvement we can upload files with their mime-type so we can visualize them in the webui.
 
 
+## Screenshots
+
+Docker-compose up --build
+![docker-compose](https://i.imgur.com/Efi0aiD.png)
+
+Uploading a "file"
+![upload-a-file](https://i.imgur.com/rDVrL4a.png)
+
+Getting the file back:
+![back](https://i.imgur.com/GUEfIix.png)
+
+Logs from docker:
+![get logs](https://i.imgur.com/PbNoHbn.png)
+
 ---
 
 Hey there! Hope you'll have at least as much fun with this exercise, as we had designing it 😄
