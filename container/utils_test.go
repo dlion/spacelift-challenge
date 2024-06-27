@@ -34,7 +34,7 @@ func TestContainer(t *testing.T) {
 		}
 	}()
 
-	t.Run("It should get the port from a minio instance", func(t *testing.T) {
+	t.Run("It should get the ip from a minio instance", func(t *testing.T) {
 		cli, err := client.NewClientWithOpts(client.FromEnv)
 		if err != nil {
 			t.Fatalf("Failed to create Docker client: %v", err)
@@ -50,7 +50,7 @@ func TestContainer(t *testing.T) {
 		assert.Equal(t, ip, instanceIP)
 	})
 
-	t.Run("It should get the ip from a minio instance", func(t *testing.T) {
+	t.Run("It should get the port from a minio instance", func(t *testing.T) {
 		cli, err := client.NewClientWithOpts(client.FromEnv)
 		if err != nil {
 			t.Fatalf("Failed to create Docker client: %v", err)
