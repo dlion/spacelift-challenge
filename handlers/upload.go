@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -21,14 +20,7 @@ func (h *HandlerManager) UploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	instanceNumber := hash.GetInstanceFromKey(id, len(h.MinioServices))
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		log.Println("Received bad file")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	if ok, _ := h.MinioServices[instanceNumber].UploadFile(body, strconv.Itoa(hash.HashId(id))); !ok {
+	if err := h.MinioServices[instanceNumber].UploadFile(r.Body, strconv.Itoa(hash.HashId(id))); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

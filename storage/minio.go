@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"bytes"
 	"context"
 	"io"
 	"log"
@@ -34,38 +33,32 @@ func NewMinioService(client *minio.Client) *MinioService {
 	return &MinioService{client: client}
 }
 
-func (m *MinioService) UploadFile(body []byte, hash string) (bool, error) {
+func (m *MinioService) UploadFile(body io.Reader, hash string) error {
 	ctx := context.Background()
 
 	_, err := createBucketIfNotExist(ctx, m.client)
 	if err != nil {
-		return false, err
+		return err
 	}
 
-	_, err = m.client.PutObject(context.Background(), BUCKET_NAME, hash, bytes.NewReader(body), int64(len(body)), minio.PutObjectOptions{})
+	_, err = m.client.PutObject(context.Background(), BUCKET_NAME, hash, body, -1, minio.PutObjectOptions{})
 	if err != nil {
 		log.Printf("- %s - Couldn't upload the object with id %s into the bucket named: %s\n", m.client.EndpointURL(), hash, BUCKET_NAME)
-		return false, err
+		return err
 	}
 	log.Printf("- %s - The object with id %s has been uploaded into the bucket named: %s\n", m.client.EndpointURL(), hash, BUCKET_NAME)
-	return true, nil
+	return nil
 }
 
-func (m *MinioService) GetFile(hash string) ([]byte, error) {
+func (m *MinioService) GetFile(hash string) (io.Reader, error) {
 	file, err := m.client.GetObject(context.Background(), BUCKET_NAME, hash, minio.GetObjectOptions{})
 	if err != nil {
 		log.Printf("- %s - Couldn't get the file %s from the bucket %s", m.client.EndpointURL(), hash, BUCKET_NAME)
 		return nil, err
 	}
 
-	fileBody, err := io.ReadAll(file)
-	if err != nil {
-		log.Printf("- %s - Couldn't read the file %s from the bucket %s", m.client.EndpointURL(), hash, BUCKET_NAME)
-		return nil, err
-	}
-
 	log.Printf("- %s - Got the file name %s from the bucket: %s", m.client.EndpointURL(), hash, BUCKET_NAME)
-	return fileBody, nil
+	return file, nil
 }
 
 func createBucketIfNotExist(ctx context.Context, client *minio.Client) (bool, error) {

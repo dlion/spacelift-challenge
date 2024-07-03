@@ -48,11 +48,10 @@ func TestMinio(t *testing.T) {
 		minioService := NewMinioService(minioClient)
 
 		body := []byte("Hello World")
-		ok, err := minioService.UploadFile(body, "123")
+		err = minioService.UploadFile(bytes.NewReader(body), "123")
 		assert.NoError(t, err)
-		assert.Equal(t, ok, true)
 
-		ok, err = minioClient.BucketExists(ctx, BUCKET_NAME)
+		ok, err := minioClient.BucketExists(ctx, BUCKET_NAME)
 		assert.NoError(t, err)
 		assert.True(t, ok)
 
@@ -97,9 +96,8 @@ func TestMinio(t *testing.T) {
 
 		minioService := NewMinioService(minioClient)
 		anotherBody := []byte("Another World")
-		ok, err := minioService.UploadFile(anotherBody, "123")
+		err = minioService.UploadFile(bytes.NewReader(anotherBody), "123")
 		assert.NoError(t, err)
-		assert.Equal(t, ok, true)
 
 		obj, err := minioClient.GetObject(ctx, BUCKET_NAME, "123", minio.GetObjectOptions{})
 		assert.NoError(t, err)
@@ -147,6 +145,9 @@ func TestMinio(t *testing.T) {
 		file, err := minioService.GetFile("1916298011")
 		assert.NoError(t, err)
 
-		assert.Equal(t, []byte("Hello World"), file)
+		buffer, err := io.ReadAll(file)
+		assert.NoError(t, err)
+
+		assert.Equal(t, []byte("Hello World"), buffer)
 	})
 }

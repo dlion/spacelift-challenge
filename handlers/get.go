@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -27,6 +28,9 @@ func (h *HandlerManager) GetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, err := io.Copy(w, fileBody); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write(fileBody)
 }
