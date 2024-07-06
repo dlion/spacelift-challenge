@@ -50,14 +50,19 @@ func (m *MinioService) UploadFile(body io.Reader, hash string) error {
 	return nil
 }
 
-func (m *MinioService) GetFile(hash string) (io.Reader, error) {
-	file, err := m.client.GetObject(context.Background(), BUCKET_NAME, hash, minio.GetObjectOptions{})
+func (m *MinioService) GetFile(filename string) (io.Reader, error) {
+	file, err := m.client.GetObject(context.Background(), BUCKET_NAME, filename, minio.GetObjectOptions{})
 	if err != nil {
-		log.Printf("- %s - Couldn't get the file %s from the bucket %s", m.client.EndpointURL(), hash, BUCKET_NAME)
+		log.Printf("- %s - Error reading the file %s in the bucket %s", m.client.EndpointURL(), filename, BUCKET_NAME)
 		return nil, err
 	}
 
-	log.Printf("- %s - Got the file name %s from the bucket: %s", m.client.EndpointURL(), hash, BUCKET_NAME)
+	if _, err := file.Stat(); err != nil {
+		log.Printf("- %s - Couldn't get the file %s from the bucket %s", m.client.EndpointURL(), filename, BUCKET_NAME)
+		return nil, err
+	}
+
+	log.Printf("- %s - Got the file name %s from the bucket: %s", m.client.EndpointURL(), filename, BUCKET_NAME)
 	return file, nil
 }
 

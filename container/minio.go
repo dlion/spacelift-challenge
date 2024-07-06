@@ -20,6 +20,10 @@ type MinioInstance struct {
 	Secret string
 }
 
+func (m MinioInstance) String() string {
+	return fmt.Sprintf("%s.%s", m.Name, m.URL)
+}
+
 func GetMinioInstancesFromDocker(client *client.Client) ([]MinioInstance, error) {
 	containers, err := GetContainerList(client, context.Background())
 	if err != nil {

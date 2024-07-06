@@ -16,11 +16,9 @@ Linkedin: https://linkedin.com/in/dlion
 `docker-compose up --build`
 
 ## Improvements
-1. The hash function can be improved using [consistent hashing](https://highscalability.com/consistent-hashing-algorithm/). My assumption for this exercise is that whenever we spawn a minIO instance it stays up and running without down. Clearly it's an impossible scenario made up for matter of time.
-2. If the file exists, it will be override with the new one. As improvment we can consider a better way to handle this scenario.
-3. Removed `MINIO_SECRET_KEY` and `MINIO_ACCESS_KEY` because they are deprecated, subsituting them with `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`.
-4. Removed Inconsisency inside the `go.mod` file and Dockerfile, now everything is using Go1.22
-5. As improvement we can upload files with their mime-type so we can visualize them in the webui.
+1. If the file exists, it will be override with the new one. As improvment we can consider a better way to handle this scenario.
+2. Removed `MINIO_SECRET_KEY` and `MINIO_ACCESS_KEY` because they are deprecated, subsituting them with `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`.
+3. As improvement we can upload files with their content-type so we can visualize them in the webui.
 
 
 ## Screenshots

@@ -3,9 +3,7 @@ package handlers
 import (
 	"log"
 	"net/http"
-	"strconv"
 
-	"github.com/dlion/spacelift-challenge/hash"
 	"github.com/gorilla/mux"
 )
 
@@ -18,9 +16,8 @@ func (h *HandlerManager) UploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	instanceNumber := hash.GetInstanceFromKey(id, len(h.MinioServices))
-
-	if err := h.MinioServices[instanceNumber].UploadFile(r.Body, strconv.Itoa(hash.HashId(id))); err != nil {
+	consistentInstanceNumber := h.Consistent.LocateKey([]byte(id))
+	if err := h.MinioServices[consistentInstanceNumber.String()].UploadFile(r.Body, id); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

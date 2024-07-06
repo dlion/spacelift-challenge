@@ -4,9 +4,7 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
 
-	"github.com/dlion/spacelift-challenge/hash"
 	"github.com/gorilla/mux"
 )
 
@@ -19,10 +17,8 @@ func (h *HandlerManager) GetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	instanceNumber := hash.GetInstanceFromKey(id, len(h.MinioServices))
-
-	filename := strconv.Itoa(hash.HashId(id))
-	fileBody, err := h.MinioServices[instanceNumber].GetFile(filename)
+	consistentInstanceNumber := h.Consistent.LocateKey([]byte(id))
+	fileBody, err := h.MinioServices[consistentInstanceNumber.String()].GetFile(id)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -32,5 +28,4 @@ func (h *HandlerManager) GetHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }

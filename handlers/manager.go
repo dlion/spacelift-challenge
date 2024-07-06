@@ -3,19 +3,21 @@ package handlers
 import (
 	"unicode"
 
+	"github.com/buraksezer/consistent"
 	"github.com/dlion/spacelift-challenge/storage"
 )
 
 type HandlerManager struct {
-	MinioServices []*storage.MinioService
+	MinioServices map[string]*storage.MinioService
+	Consistent    *consistent.Consistent
 }
 
 const (
 	MAXIMUM_ID_CHARS = 32
 )
 
-func NewHandlerManager(services []*storage.MinioService) *HandlerManager {
-	return &HandlerManager{MinioServices: services}
+func NewHandlerManager(services map[string]*storage.MinioService, consistent *consistent.Consistent) *HandlerManager {
+	return &HandlerManager{MinioServices: services, Consistent: consistent}
 }
 
 func isAlphanumeric(s string) bool {
