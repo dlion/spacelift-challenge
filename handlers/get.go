@@ -11,14 +11,14 @@ import (
 func (h *HandlerManager) GetHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, exists := vars["id"]
-	if !exists || len(id) > MAXIMUM_ID_CHARS || !isAlphanumeric(id) {
+	if checkID(id, exists) {
 		log.Println("Received bad ID")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	consistentInstanceNumber := h.Consistent.LocateKey([]byte(id))
-	fileBody, err := h.MinioServices[consistentInstanceNumber.String()].GetFile(id)
+	instanceID := h.Consistent.LocateKey([]byte(id))
+	fileBody, err := h.MinioServices[instanceID.String()].GetFile(id)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
